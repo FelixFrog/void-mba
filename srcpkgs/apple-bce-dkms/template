@@ -1,7 +1,7 @@
 # Template file for 'apple-bce-dkms'
 pkgname=apple-bce-dkms
 version=r183
-revision=1
+revision=2
 _gitrev=f93c6566f98b3c95677de8010f7445fa19f75091
 wrksrc="apple-bce-drv-${_gitrev}"
 depends="dkms"
