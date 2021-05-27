@@ -1,0 +1,39 @@
+# Template file for 'apple-bce-dkms'
+pkgname=apple-bce-dkms
+version=r183
+revision=1
+_gitrev=f93c6566f98b3c95677de8010f7445fa19f75091
+wrksrc="apple-bce-drv-${_gitrev}"
+depends="dkms"
+short_desc="Apple buffer copy engine driver (DKMS)"
+maintainer="Francesco Ognibene <ogibenefra@gmail.com>"
+license="GPL-2.0-only"
+homepage="https://github.com/t2linux/apple-bce-drv"
+distfiles="${homepage}/archive/${_gitrev}.tar.gz"
+checksum=6330ca1ce0957c38daf0b7bc3e6c72dfa1e73346b769b8de87995891e887f3b6
+dkms_modules="apple-bce ${version}"
+
+do_install() {
+	vmkdir /usr/src/apple-bce-${version}
+	vcopy "*.c" usr/src/apple-bce-${version}
+	vcopy "*.h" usr/src/apple-bce-${version}
+	vcopy Makefile usr/src/apple-bce-${version}
+	vcopy audio usr/src/apple-bce-${version}
+	vcopy vhci usr/src/apple-bce-${version}
+
+	vinstall ${FILESDIR}/dkms.conf 644 usr/src/apple-bce-${version}
+
+	sed -i -e "s/@VERSION@/${version}/" ${PKGDESTDIR}/usr/src/apple-bce-${version}/dkms.conf
+
+	vdoc README.md
+
+	# modules-load.d(5) file.
+	vmkdir usr/lib/modules-load.d
+	echo "apple-bce" > ${DESTDIR}/usr/lib/modules-load.d/apple-bce.conf
+	chmod 644 ${DESTDIR}/usr/lib/modules-load.d/apple-bce.conf
+
+	# add module to the initramfs - dracut.conf(5).
+	vmkdir usr/lib/dracut/dracut.conf.d
+	echo "add_drivers+=\" apple-bce \"" > ${DESTDIR}/usr/lib/dracut/dracut.conf.d/20-apple-bce.conf
+	chmod 644 ${DESTDIR}/usr/lib/dracut/dracut.conf.d/20-apple-bce.conf
+}
